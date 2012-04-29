@@ -1,6 +1,6 @@
 {
-     "name": "Niburu Online",
-     "description": "MMORPG",
+     "name": "Tikal Online Server",
+     "description": "2D MMORPG by Gilberto Avalos",
      "version": "0.0.1",
      "dependencies": {
         "express": "3.0.0alpha1",
