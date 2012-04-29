@@ -43,7 +43,7 @@ server.sockets.on("connection", function(socket){
 			                    socket.emit("loggedOn", { l: 0, m: "Contraseña incorrecta" })
 			                } else {
 				                if(usuarios[data.u]){
-				                	socket.emit("loggedOn", { l: 0, m: "El usuario ya se encuentra conectado." })
+				                	socket.emit("loggedOn", { l: 0, m: "El usuario "+data.u+" ya se encuentra conectado." })
 				                } else {
 			                    socket.emit("loggedOn", { l: 1, m: "Usuario identificado" })
 			
