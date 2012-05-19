@@ -14,6 +14,19 @@ var db = con.createClient({
     password:'a650204'
 });
 
+// Creaturas temporales
+var mobs = [{
+	x: 200,
+	y: 200,
+	settings: {
+		name: "Dwarf",
+		spr: "dwarf",
+		map: "tikal",
+		level: 1,
+		vel: 1
+	}
+}];
+
 // Variables para referencias
 var players = {};
 var online = {};
@@ -54,7 +67,16 @@ nowjs.on('disconnect', function() {
 	
 // Recibir mensaje y reenviarlo
 clientes.now.enviarMensaje = function(data){
-    clientes.now.nuevoMensaje("<b>"+this.now.player.nick+":</b> "+data+"<br/>");
+	var admin_level = player_id[loadPlayer.user.clientId].admin_level;
+	if(admin_level > 0){
+		var com = new RegExp("/pos");
+		if(com.test(data)){
+			this.now.nuevoMensaje("<b>Tu posici&oacute;n es X: "+this.now.player.x+" Y: "+this.now.player.y+" </b><br/>");
+		}
+	} else { 
+    	clientes.now.nuevoMensaje("<b>"+this.now.player.nick+":</b> "+data+"<br/>");
+    }
+
 }
 
 // Login
@@ -252,3 +274,8 @@ clientes.now.addItemInventory = function(item, cantidad, slot){
 		this.now.nuevoMensaje("<b>You need a free slot in your inventory!</b><br/>");
 	}
 }
+
+clientes.now.mobManager = function(mobId, player){
+
+}
+
