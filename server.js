@@ -15,12 +15,38 @@ var db = con.createClient({
 });
 
 // Creaturas temporales
+var pos_origen = {};
 var mobs = [{
-	x: 200,
-	y: 200,
+	x: 543,
+	y: 289,
 	settings: {
 		name: "Dwarf",
-		spr: "dwarf",
+		id: 1,
+		image: "c13",
+		map: "tikal",
+		level: 1,
+		vel: 1
+	}
+},
+{
+	x: 401,
+	y: 671,
+	settings: {
+		name: "Bat",
+		id: 2,
+		image: "c15",
+		map: "tikal",
+		level: 1,
+		vel: 1
+	}
+},
+{
+	x: 918,
+	y: 556,
+	settings: {
+		name: "Gilberto",
+		id: 3,
+		image: "c12",
 		map: "tikal",
 		level: 1,
 		vel: 1
@@ -31,17 +57,18 @@ var mobs = [{
 var players = {};
 var online = {};
 var player_id = {};
-var version = 0.2
+var version = 0.2;
+clientes.now.mobs = {};
 
 console.log("Tikal Online Server v"+version);
 
 db.query("USE TikalOnline");
-var proxId = 0;
 
 // Se conecta un cliente
 nowjs.on('connect', function() {
  	console.log("Se ha recibido una conexión");
  	this.now.player = { nick: "", hp: 0, inventario: {} };
+
 });
 
 // Cliente desconectado
@@ -120,9 +147,7 @@ clientes.now.loadPlayer = function(data){
 	function selectCb(err, results, fields) {
 		if(typeof(online[results[0].id]) != 'undefined'){
 		 	loadPlayer.now.loggedOn({ l: 0, m: "The user "+results[0].nick+" is already online." });
-		 	
 		 } else {
-		
 			loadPlayer.now.loggedOn({ l: 1, m: "Loading, please wait...", id: results[0].id, nick: results[0].nick, x: results[0].x, y: results[0].y, spr: results[0].spr });
 			player_id[loadPlayer.user.clientId] = { id: results[0].id, admin_level: results[0].admin_level };
 			
@@ -147,7 +172,6 @@ clientes.now.loadPlayer = function(data){
 					loadPlayer.now.player.inventario[14] = { item: results[0].slot_14, cantidad: results[0].cantidad_slot_14 };
 					loadPlayer.now.player.inventario[15] = { item: results[0].slot_15, cantidad: results[0].cantidad_slot_15 };
 					loadPlayer.now.player.inventario[16] = { item: results[0].slot_16, cantidad: results[0].cantidad_slot_16 };
-					
 					loadPlayer.now.cargarInventario(loadPlayer.now.player.inventario);
 				} else {
 					db.query("INSERT INTO personajes_inventario VALUES('', '"+player_id[loadPlayer.user.clientId].id+"', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '') ");
@@ -181,6 +205,7 @@ clientes.now.loadPlayer = function(data){
 			loadPlayer.now.player.spr = results[0].spr;
 			loadPlayer.now.player.x = results[0].x;
 			loadPlayer.now.player.y = results[0].y;
+			loadPlayer.now.player.ready = false;
 								
 			// Agregar el usuario al arrreglo de usuarios globales
 			players[loadPlayer.user.clientId] = loadPlayer.now.player;
@@ -200,6 +225,13 @@ clientes.now.loadPlayer = function(data){
 		
 	});
 
+}
+
+clientes.now.getPlayers = function(){
+	for(var i in players){
+		if(players[i].id != this.user.clientId)
+			this.now.actualizarPlayers(players[i]);
+	}
 }
 
 clientes.now.moverPlayer = function(data){
@@ -269,13 +301,69 @@ clientes.now.addItemInventory = function(item, cantidad, slot){
 	if(cant_slots <= 16){
 		this.now.player.inventario[cant_slots+1] = { item: item, cantidad: cantidad };
 		db.query("UPDATE personajes_inventario SET slot_"+cant_slots+" = '"+item+"' cantidad_slot_"+cant_slots+" = '"+cantidad+"' WHERE personaje_id = '"+player_id[sendQuest.user.clientId].id+"' ");
-		now.now.cargarInventario();
+		this.now.cargarInventario();
 	} else {
 		this.now.nuevoMensaje("<b>You need a free slot in your inventory!</b><br/>");
 	}
 }
 
-clientes.now.mobManager = function(mobId, player){
+// Mob Manager
+var mobManager = setInterval(function(){
+	var online = 0;
+	for(var i in players) {
+		online++;
+	}
+	if(online > 0){
+		console.log("Usuarios conectados: "+online);
+		for (var i in mobs){
+			// Guardar posición de origen
+			if(typeof(pos_origen[i]) == 'undefined'){
+				pos_origen[i] = { x: mobs[i].x, y: mobs[i].y };
+				mobs[i].settings.id_ = i;
+			}
 
+			var newPosx = 0;
+			var newPosy = 0;
+			if(mobs[i].settings.name != ""){
+
+				// Modificar X?
+				if((Math.round(Math.random()*1)*2-1) == 1)
+					newPosx = Math.floor((Math.random()*70)+5);
+					newPosx = newPosx*(Math.round(Math.random()*1)*2-1);
+
+				// Modificar Y?
+				if((Math.round(Math.random()*1)*2-1) == 1)
+					newPosy = Math.floor((Math.random()*70)+5);
+					nowPosy = newPosy*(Math.round(Math.random()*1)*2-1);
+
+				// Si no excede un límite de 250
+				if((mobs[i].x+newPosx) < (pos_origen[i].x+120) && (mobs[i].x+newPosx) > (pos_origen[i].x-120))
+					mobs[i].x += newPosx;
+				if((mobs[i].y+newPosy) < (pos_origen[i].y+120) && (mobs[i].y+newPosy) > (pos_origen[i].y-120))
+					mobs[i].y += newPosy;
+				//console.log("Origen X: "+pos_origen[i].x+" Y: "+pos_origen[i].y);
+				console.log("Mob ID: "+mobs[i].settings.id+", "+mobs[i].settings.name+" X: "+mobs[i].x+" Y: "+mobs[i].y);
+
+				// Enviar variable
+				clientes.now.mobs = mobs;
+			}
+			
+		}
+	} else {
+		console.log("Esperando usuarios...");
+		for (var i in mobs){
+			if(typeof(pos_origen[i]) != 'undefined'){
+				mobs[i].x = pos_origen[i].x;
+				mobs[i].y = pos_origen[i].y;
+			}
+		}
+	}
+}, 2000);
+
+clientes.now.updateMob = function(id_, pos){
+	//console.log("Recibido ID: "+id_+" X: "+pos.x+" Y: "+pos.y);
+	mobs[id_].x = pos.x;
+	mobs[id_].y = pos.y;
+	
 }
 
