@@ -14,51 +14,80 @@ var db = con.createClient({
     password:'a650204'
 });
 
+var players = {};
+var fecha = new Date();
+var porcentajeExpFromMobs = {};
+//var minutos = fecha.getMinutes();
+
 // Creaturas temporales
 var pos_origen = {};
 var mobs = [{
 	x: 543,
 	y: 289,
+	exp: 50,
 	settings: {
 		name: "Dwarf",
 		id: 1,
 		image: "c13",
 		map: "tikal",
-		level: 1,
-		vel: 1
+		maxhp: 100,
+		hp: 100,
+		vel: 1,
+	},
+	attr: {
+		nivel: 1,
+		agi: 1,
+		dex: 1,
+		def: 1
 	}
 },
 {
 	x: 401,
 	y: 671,
+	exp: 100,
 	settings: {
 		name: "Bat",
 		id: 2,
 		image: "c15",
 		map: "tikal",
-		level: 1,
+		maxhp: 100,
+		hp: 100,
 		vel: 1
+	},
+	attr: {
+		nivel: 1,
+		agi: 1,
+		dex: 1,
+		def: 1
 	}
 },
 {
 	x: 918,
 	y: 556,
+	exp: 150,
 	settings: {
 		name: "Gilberto",
 		id: 3,
 		image: "c12",
 		map: "tikal",
-		level: 1,
+		maxhp: 100,
+		hp: 100,
 		vel: 1
+	},
+	attr: {
+		nivel: 1,
+		agi: 1,
+		dex: 1,
+		def: 1
 	}
 }];
 
+clientes.now.mobs = mobs;
+
 // Variables para referencias
-var players = {};
 var online = {};
 var player_id = {};
 var version = 0.2;
-clientes.now.mobs = {};
 
 console.log("Tikal Online Server v"+version);
 
@@ -67,7 +96,10 @@ db.query("USE TikalOnline");
 // Se conecta un cliente
 nowjs.on('connect', function() {
  	console.log("Se ha recibido una conexión");
+ 	this.now.player = {};
  	this.now.player = { nick: "", hp: 0, inventario: {} };
+ 	this.now.player.hp = 0;
+	this.now.player.inventario = {};
 
 });
 
@@ -195,6 +227,13 @@ clientes.now.loadPlayer = function(data){
 				}
 			});
 
+			db.query("SELECT * FROM personajes_atributos WHERE id_personaje = '"+player_id[loadPlayer.user.clientId].id+"' ",
+				function selectCb(err, results, fields) {
+					if(typeof(results) != 'undefined'){
+						loadPlayer.now.player.attr = results[0];
+					}
+			});
+
 			// Usuario online
 			online[results[0].id] = 1;
 
@@ -205,7 +244,6 @@ clientes.now.loadPlayer = function(data){
 			loadPlayer.now.player.spr = results[0].spr;
 			loadPlayer.now.player.x = results[0].x;
 			loadPlayer.now.player.y = results[0].y;
-			loadPlayer.now.player.ready = false;
 								
 			// Agregar el usuario al arrreglo de usuarios globales
 			players[loadPlayer.user.clientId] = loadPlayer.now.player;
@@ -315,16 +353,16 @@ var mobManager = setInterval(function(){
 	}
 	if(online > 0){
 		console.log("Usuarios conectados: "+online);
-		for (var i in mobs){
+		for (var i in clientes.now.mobs){
 			// Guardar posición de origen
 			if(typeof(pos_origen[i]) == 'undefined'){
-				pos_origen[i] = { x: mobs[i].x, y: mobs[i].y };
-				mobs[i].settings.id_ = i;
+				pos_origen[i] = { x: clientes.now.mobs[i].x, y: clientes.now.mobs[i].y };
+				clientes.now.mobs[i].settings.id_ = i;
 			}
 
 			var newPosx = 0;
 			var newPosy = 0;
-			if(mobs[i].settings.name != ""){
+			if(clientes.now.mobs[i].settings.name != "" && clientes.now.mobs[i].settings.hp > 0){
 
 				// Modificar X?
 				if((Math.round(Math.random()*1)*2-1) == 1)
@@ -337,33 +375,123 @@ var mobManager = setInterval(function(){
 					nowPosy = newPosy*(Math.round(Math.random()*1)*2-1);
 
 				// Si no excede un límite de 250
-				if((mobs[i].x+newPosx) < (pos_origen[i].x+120) && (mobs[i].x+newPosx) > (pos_origen[i].x-120))
-					mobs[i].x += newPosx;
-				if((mobs[i].y+newPosy) < (pos_origen[i].y+120) && (mobs[i].y+newPosy) > (pos_origen[i].y-120))
-					mobs[i].y += newPosy;
+				if((clientes.now.mobs[i].x+newPosx) < (pos_origen[i].x+120) && (clientes.now.mobs[i].x+newPosx) > (pos_origen[i].x-120))
+					clientes.now.mobs[i].x += newPosx;
+				if((clientes.now.mobs[i].y+newPosy) < (pos_origen[i].y+120) && (clientes.now.mobs[i].y+newPosy) > (pos_origen[i].y-120))
+					clientes.now.mobs[i].y += newPosy;
 				//console.log("Origen X: "+pos_origen[i].x+" Y: "+pos_origen[i].y);
-				console.log("Mob ID: "+mobs[i].settings.id+", "+mobs[i].settings.name+" X: "+mobs[i].x+" Y: "+mobs[i].y);
-
-				// Enviar variable
-				clientes.now.mobs = mobs;
+				console.log("Mob ID: "+clientes.now.mobs[i].settings.id+", "+clientes.now.mobs[i].settings.name+" X: "+clientes.now.mobs[i].x+" Y: "+clientes.now.mobs[i].y+" HP: "+clientes.now.mobs[i].settings.hp);
 			}
 			
 		}
 	} else {
-		console.log("Esperando usuarios...");
-		for (var i in mobs){
+		//console.log("Esperando usuarios...");
+		for (var i in clientes.now.mobs){
 			if(typeof(pos_origen[i]) != 'undefined'){
-				mobs[i].x = pos_origen[i].x;
-				mobs[i].y = pos_origen[i].y;
+				clientes.now.mobs[i].x = pos_origen[i].x;
+				clientes.now.mobs[i].y = pos_origen[i].y;
 			}
 		}
 	}
 }, 2000);
 
 clientes.now.updateMob = function(id_, pos){
-	//console.log("Recibido ID: "+id_+" X: "+pos.x+" Y: "+pos.y);
-	mobs[id_].x = pos.x;
-	mobs[id_].y = pos.y;
+	clientes.now.mobs[id_].x = pos.x;
+	clientes.now.mobs[id_].y = pos.y;
 	
 }
+
+clientes.now.attack = function(id, target){
+	var tiempoActual = new Date();
+
+	// Rango de tiempo para ataque
+	if(tiempoActual.getTime() > fecha.getTime() + 1000){
+
+		var factor = Math.random(); // Full: 1 Balanceado 0.75 - Defensa 0.5
+		var armaAtk = 5;
+		var atacanteNivel = this.now.player.attr.nivel;
+		var fuerza = this.now.player.attr.atk;
+		fecha = tiempoActual;
+		if(factor < 0.1)
+				factor = 0.15;
+
+		var damage = 0.085*factor*armaAtk*fuerza+atacanteNivel/5;
+		damage = parseInt(damage);
+
+		if(target == 0){
+			
+			if(damage != 0){
+
+				// Acumular experiencia ganada
+				var porcentaje_exp = (damage/clientes.now.mobs[id].settings.maxhp)*100;
+				porcentaje_exp = clientes.now.mobs[id].exp*(porcentaje_exp/100);
+				
+				if(typeof(porcentajeExpFromMobs[id]) == "undefined"){
+					porcentajeExpFromMobs[id] = {};
+					porcentajeExpFromMobs[id][this.user.clientId] = 0;
+					porcentajeExpFromMobs[id][this.user.clientId] += porcentaje_exp;
+				} else {
+					if(typeof(porcentajeExpFromMobs[id][this.now.player.id]) == "undefined")
+						porcentajeExpFromMobs[id][this.user.clientId] = 0;
+					porcentajeExpFromMobs[id][this.user.clientId] += porcentaje_exp;
+				}
+
+				var actualHP = parseInt(clientes.now.mobs[id].settings.hp);
+				clientes.now.mobs[id].settings.hp = actualHP - damage;
+				this.now.nuevoMensaje("Has causado "+damage+" de da&ntilde;o a "+clientes.now.mobs[id].settings.name+"<br/>");
+			} else {
+				this.now.nuevoMensaje("Ha fallado tu ataque a "+clientes.now.mobs[id].settings.name+"<br/>");
+			}
+
+			if(clientes.now.mobs[id].settings.hp <= 0){
+				for(index in porcentajeExpFromMobs[id]){
+					var p_id = player_id[index].id;
+					if(typeof(players[index]) != "undefined"){
+						if(this.now.player.id == index){
+							this.now.player.attr.exp = this.now.player.attr.exp+porcentajeExpFromMobs[id][index];
+							db.query("UPDATE personajes_atributos SET exp = '"+this.now.player.attr.exp+"' WHERE id_personaje = '"+p_id+"' ");
+
+							// Sube de nivel?
+							var xpForLevel = 50 * (1+this.now.player.attr.nivel^2.5);
+							if(this.now.player.attr.exp >= xpForLevel){
+								var nuevoLevel = this.now.player.attr.nivel+1;
+								db.query("UPDATE personajes_atributos SET nivel = '"+nuevoLevel+"' WHERE id_personaje = '"+p_id+"' ");
+								this.now.nuevoMensaje("<b>You advanced from level "+this.now.player.attr.nivel+" to level "+nuevoLevel+"</b>");
+								this.now.player.attr.nivel = nuevoLevel;
+							}
+						}
+					}
+				}
+				clientes.now.delMob(clientes.now.mobs[id].settings.id);
+			} else { 
+				clientes.now.updateMob_(clientes.now.mobs[id]);
+			}
+
+		} else {
+
+			// Ataque a otro personaje
+
+		}
+
+	}
+	
+}
+
+// Función Update
+var update = setInterval(function(){
+	var online = 0;
+	for(var i in players) {
+		online++;
+	}
+	if(online > 0){
+		/*
+		now.player.hp += hp_;
+		if(now.player.hp > now.player.max_hp)
+			now.player.hp = now.player.max_hp;
+		var n_hp = (now.player.hp*100)/now.player.max_hp; */
+		clientes.now.getStats();
+	}
+
+},1000);
+
 
