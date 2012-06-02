@@ -25,6 +25,8 @@ var mobs = [{
 	x: 543,
 	y: 289,
 	exp: 50,
+	type: "npc",
+	deathTime: 0,
 	settings: {
 		name: "Dwarf",
 		id: 1,
@@ -45,6 +47,8 @@ var mobs = [{
 	x: 401,
 	y: 671,
 	exp: 100,
+	type: "npc",
+	deathTime: 0,
 	settings: {
 		name: "Bat",
 		id: 2,
@@ -65,6 +69,8 @@ var mobs = [{
 	x: 918,
 	y: 556,
 	exp: 150,
+	type: "npc",
+	deathTime: 0,
 	settings: {
 		name: "Gilberto",
 		id: 3,
@@ -78,6 +84,98 @@ var mobs = [{
 		nivel: 1,
 		agi: 1,
 		dex: 1,
+		def: 1
+	}
+},{
+	x: 742,
+	y: 572,
+	exp: 20,
+	atacante: "",
+	type: "creature",
+	deathTime: 0,
+	settings: {
+		name: "Slime",
+		id: 4,
+		image: "mostri2",
+		map: "tikal",
+		maxhp: 100,
+		hp: 100,
+		vel: 2
+	},
+	attr: {
+		nivel: 1,
+		fue: 5,
+		agi: 1,
+		dex: 5,
+		def: 1
+	}
+},{
+	x: 1171,
+	y: 482,
+	exp: 20,
+	atacante: "",
+	type: "creature",
+	deathTime: 0,
+	settings: {
+		name: "Slime",
+		id: 5,
+		image: "mostri2",
+		map: "tikal",
+		maxhp: 100,
+		hp: 100,
+		vel: 2
+	},
+	attr: {
+		nivel: 1,
+		fue: 5,
+		agi: 1,
+		dex: 5,
+		def: 1
+	}
+},{
+	x: 1492,
+	y: 752,
+	exp: 20,
+	atacante: "",
+	type: "creature",
+	deathTime: 0,
+	settings: {
+		name: "Slime",
+		id: 6,
+		image: "mostri2",
+		map: "tikal",
+		maxhp: 100,
+		hp: 100,
+		vel: 2
+	},
+	attr: {
+		nivel: 1,
+		fue: 5,
+		agi: 1,
+		dex: 5,
+		def: 1
+	}
+},{
+	x: 1355,
+	y: 472,
+	exp: 20,
+	atacante: "",
+	type: "creature",
+	deathTime: 0,
+	settings: {
+		name: "Slime",
+		id: 7,
+		image: "mostri2",
+		map: "tikal",
+		maxhp: 100,
+		hp: 100,
+		vel: 2
+	},
+	attr: {
+		nivel: 1,
+		fue: 5,
+		agi: 1,
+		dex: 5,
 		def: 1
 	}
 }];
@@ -117,6 +215,7 @@ nowjs.on('disconnect', function() {
       clientes.now.nuevoMensaje(this.now.player.nick + ' has been disconnected.<br/>');
       clientes.now.u_online(players);
       clientes.now.del_player(this.now.player.id);
+      delete player_id[this.user.clientId];
   	  break;
 
     }
@@ -140,13 +239,12 @@ clientes.now.enviarMensaje = function(data){
 
 // Login
 clientes.now.loginUsuario = function(data){
-	var respuesta = 0;
 	var resultados;
 	loginUsuario = this;
 	db.query("SELECT usuario FROM cuentas WHERE usuario = '"+data.u+"' ",
 		function selectCb(err, results, fields) {
             if(typeof(results[0]) == 'undefined'){
-				loginUsuario.now.loggedOn({ l: 0, m: "The user does not exist" });
+					loginUsuario.now.loggedOn({ l: 0, m: "The user does not exist" });
             } else {
                 db.query("SELECT * FROM cuentas WHERE usuario = '"+data.u+"' AND password = '"+data.p+"' ",
 					function selectCb(err, results, fields) {
@@ -156,7 +254,6 @@ clientes.now.loginUsuario = function(data){
 				        	db.query("SELECT nick, id FROM personajes WHERE cuenta_id = '"+results[0].id+"' ",
 					        	function selectCb(err, results, fields) {
 						        	if(typeof(results[0]) != 'undefined'){
-							        	respuesta = 3;
 							        	loginUsuario.now.selectPlayers(results);
 							        } else {
 								      	loginUsuario.now.loggedOn({ l: 0, m: "You need to create a character." });
@@ -206,31 +303,32 @@ clientes.now.loadPlayer = function(data){
 					loadPlayer.now.player.inventario[16] = { item: results[0].slot_16, cantidad: results[0].cantidad_slot_16 };
 					loadPlayer.now.cargarInventario(loadPlayer.now.player.inventario);
 				} else {
-					db.query("INSERT INTO personajes_inventario VALUES('', '"+player_id[loadPlayer.user.clientId].id+"', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '') ");
-					loadPlayer.now.player.inventario[1] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[2] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[3] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[4] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[5] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[6] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[7] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[8] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[9] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[10] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[11] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[12] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[13] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[14] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[15] = { item: 0, cantidad: 0 };
-					loadPlayer.now.player.inventario[16] = { item: 0, cantidad: 0 };
+					// Generar inventario
+					db.query("INSERT INTO personajes_inventario(personaje_id) VALUES('"+player_id[loadPlayer.user.clientId].id+"')");
+					var i_ = 1;
+					while(i_ <= 16){
+						loadPlayer.now.player.inventario[i_] = { item: 0, cantidad: 0 };	
+					}
 					loadPlayer.now.cargarInventario(loadPlayer.now.player.inventario);
 				}
 			});
-
-			db.query("SELECT * FROM personajes_atributos WHERE id_personaje = '"+player_id[loadPlayer.user.clientId].id+"' ",
+			
+			// Cargar atributos
+			db.query("SELECT * FROM personajes_atributos WHERE personaje_id = '"+player_id[loadPlayer.user.clientId].id+"' ",
 				function selectCb(err, results, fields) {
-					if(typeof(results) != 'undefined'){
+					if(typeof(results[0]) != 'undefined'){
 						loadPlayer.now.player.attr = results[0];
+						loadPlayer.now.player.attr.hp = loadPlayer.now.player.attr.maxhp;
+					} else {
+						db.query("INSERT INTO personajes_atributos(personaje_id) VALUES('"+player_id[loadPlayer.user.clientId].id+"')");
+						db.query("SELECT * FROM personajes_atributos WHERE personaje_id = '"+player_id[loadPlayer.user.clientId].id+"' ",
+							function selectCb(err, results, fields) {
+							if(typeof(results) != 'undefined'){
+								loadPlayer.now.player.attr = results[0];
+								loadPlayer.now.player.attr.hp = loadPlayer.now.player.attr.maxhp;
+								console.log("Inicializado HP: "+loadPlayer.now.player.attr.hp);
+							}
+						});
 					}
 			});
 
@@ -329,6 +427,48 @@ clientes.now.sendQuest = function(data){
 
 }
 
+clientes.now.getStats = function(){
+
+	var porcentaje = (this.now.player.attr.hp*100)/this.now.player.attr.maxhp;
+	var attr = {
+	 			hp_txt: this.now.player.attr.hp, 
+	 			hp_por: porcentaje,
+	 			st_hp: this.now.player.attr.hp+"/"+this.now.player.attr.maxhp,
+	 			level: this.now.player.attr.nivel,
+	 			exp: this.now.player.attr.exp+"/"+(50*(1+this.now.player.attr.nivel^1.5)),
+	 			st_mana: this.now.player.attr.mana+"/"+this.now.player.attr.maxmana,
+	 			mana_por: (this.now.player.attr.mana*100)/this.now.player.attr.maxmana,
+	 			mana_txt: this.now.player.attr.mana
+	 		};
+
+	this.now.updateStats(attr);
+
+}
+
+clientes.now.useItem = function(item){
+
+	var item = items[item];
+
+	// Si es consumible
+	switch(item.type){
+
+		// Healing / Comida
+		case 1:
+			this.now.player.attr.hp += hp_;
+			if(this.now.player.attr.hp > this.now.player.attr.maxhp)
+				this.now.player.attr.hp = this.now.player.attr.maxhp;
+		break;
+
+		// Mana potion
+		case 2:
+			this.now.player.attr.mana += hp_;
+			if(this.now.player.attr.mana > this.now.player.attr.maxmana)
+				this.now.player.attr.mana = this.now.player.attr.maxmana;
+		break;
+	}
+
+}
+
 clientes.now.addItemInventory = function(item, cantidad, slot){
 	var cant_slots = 1;
 	while(cant_slots <= 16) {
@@ -362,7 +502,7 @@ var mobManager = setInterval(function(){
 
 			var newPosx = 0;
 			var newPosy = 0;
-			if(clientes.now.mobs[i].settings.name != "" && clientes.now.mobs[i].settings.hp > 0){
+			if(clientes.now.mobs[i].settings.name != "" && clientes.now.mobs[i].settings.hp > 0 && clientes.now.mobs[i].atacante == ""){
 
 				// Modificar X?
 				if((Math.round(Math.random()*1)*2-1) == 1)
@@ -374,13 +514,31 @@ var mobManager = setInterval(function(){
 					newPosy = Math.floor((Math.random()*70)+5);
 					nowPosy = newPosy*(Math.round(Math.random()*1)*2-1);
 
-				// Si no excede un límite de 250
+				// Si no excede un límite de 120
 				if((clientes.now.mobs[i].x+newPosx) < (pos_origen[i].x+120) && (clientes.now.mobs[i].x+newPosx) > (pos_origen[i].x-120))
 					clientes.now.mobs[i].x += newPosx;
 				if((clientes.now.mobs[i].y+newPosy) < (pos_origen[i].y+120) && (clientes.now.mobs[i].y+newPosy) > (pos_origen[i].y-120))
 					clientes.now.mobs[i].y += newPosy;
-				//console.log("Origen X: "+pos_origen[i].x+" Y: "+pos_origen[i].y);
-				console.log("Mob ID: "+clientes.now.mobs[i].settings.id+", "+clientes.now.mobs[i].settings.name+" X: "+clientes.now.mobs[i].x+" Y: "+clientes.now.mobs[i].y+" HP: "+clientes.now.mobs[i].settings.hp);
+
+				//console.log("Mob ID: "+clientes.now.mobs[i].settings.id+", "+clientes.now.mobs[i].settings.name+" X: "+clientes.now.mobs[i].x+" Y: "+clientes.now.mobs[i].y+" HP: "+clientes.now.mobs[i].settings.hp);
+			} else if(clientes.now.mobs[i].atacante != ""){
+			if(typeof(player_id[clientes.now.mobs[i].atacante]) != "undefined"){
+
+					clientes.now.mobs[i].x = players[clientes.now.mobs[i].atacante].x;
+					clientes.now.mobs[i].y = players[clientes.now.mobs[i].atacante].y;
+
+				} else {
+					clientes.now.mobs[i].atacante = "";
+				}
+			} else {
+
+				for (var i in clientes.now.mobs){
+					if(typeof(pos_origen[i]) != 'undefined' && clientes.now.mobs[i].settings.hp < 1){
+						clientes.now.mobs[i].x = pos_origen[i].x;
+						clientes.now.mobs[i].y = pos_origen[i].y;
+					}
+				}
+
 			}
 			
 		}
@@ -393,7 +551,7 @@ var mobManager = setInterval(function(){
 			}
 		}
 	}
-}, 2000);
+}, 600);
 
 clientes.now.updateMob = function(id_, pos){
 	clientes.now.mobs[id_].x = pos.x;
@@ -418,9 +576,21 @@ clientes.now.attack = function(id, target){
 		var damage = 0.085*factor*armaAtk*fuerza+atacanteNivel/5;
 		damage = parseInt(damage);
 
-		if(target == 0){
+		if(target == 0){ // TODO: Validar distancia menor a 40 entre el personaje y el mob.
+
+			var mobDamage = 0.085*Math.random()*(clientes.now.mobs[id].attr.nivel+5/2)*clientes.now.mobs[id].attr.fue+clientes.now.mobs[id].attr.nivel/2;
+			console.log(mobDamage);
+			mobDamage = parseInt(mobDamage);
+
+			if(mobDamage != 0){
+				this.now.player.attr.hp = parseInt(this.now.player.attr.hp)-mobDamage;
+				this.now.nuevoMensaje("Has perdido "+mobDamage+" puntos de vida por un ataque de "+clientes.now.mobs[id].settings.name+"<br/>");
+			}
 			
 			if(damage != 0){
+
+				if(clientes.now.mobs[id].atacante == "")
+					clientes.now.mobs[id].atacante = this.user.clientId;
 
 				// Acumular experiencia ganada
 				var porcentaje_exp = (damage/clientes.now.mobs[id].settings.maxhp)*100;
@@ -438,38 +608,46 @@ clientes.now.attack = function(id, target){
 
 				var actualHP = parseInt(clientes.now.mobs[id].settings.hp);
 				clientes.now.mobs[id].settings.hp = actualHP - damage;
-				this.now.nuevoMensaje("Has causado "+damage+" de da&ntilde;o a "+clientes.now.mobs[id].settings.name+"<br/>");
+				this.now.nuevoMensaje("Has causado "+damage+" de da&ntilde;o a "+clientes.now.mobs[id].settings.name+".<br/>");
 			} else {
-				this.now.nuevoMensaje("Ha fallado tu ataque a "+clientes.now.mobs[id].settings.name+"<br/>");
+				this.now.nuevoMensaje("Ha fallado tu ataque a "+clientes.now.mobs[id].settings.name+".<br/>");
 			}
 
 			if(clientes.now.mobs[id].settings.hp <= 0){
+				var muertoFecha = new Date();
+				clientes.now.mobs[id].deathTime = muertoFecha.getTime();
+
 				for(index in porcentajeExpFromMobs[id]){
 					var p_id = player_id[index].id;
+
 					if(typeof(players[index]) != "undefined"){
 						if(this.now.player.id == index){
-							this.now.player.attr.exp = this.now.player.attr.exp+porcentajeExpFromMobs[id][index];
-							db.query("UPDATE personajes_atributos SET exp = '"+this.now.player.attr.exp+"' WHERE id_personaje = '"+p_id+"' ");
+							this.now.player.attr.exp = this.now.player.attr.exp+parseInt(porcentajeExpFromMobs[id][index]);
+							this.now.nuevoMensaje("Gained experience: "+parseInt(porcentajeExpFromMobs[id][index])+"<br/>");
+							db.query("UPDATE personajes_atributos SET exp = '"+this.now.player.attr.exp+"' WHERE personaje_id = '"+p_id+"' ");
 
 							// Sube de nivel?
-							var xpForLevel = 50 * (1+this.now.player.attr.nivel^2.5);
+							var xpForLevel = 50 * (1+this.now.player.attr.nivel^1.5);
 							if(this.now.player.attr.exp >= xpForLevel){
 								var nuevoLevel = this.now.player.attr.nivel+1;
-								db.query("UPDATE personajes_atributos SET nivel = '"+nuevoLevel+"' WHERE id_personaje = '"+p_id+"' ");
-								this.now.nuevoMensaje("<b>You advanced from level "+this.now.player.attr.nivel+" to level "+nuevoLevel+"</b>");
+								db.query("UPDATE personajes_atributos SET nivel = '"+nuevoLevel+"' WHERE personaje_id = '"+p_id+"' ");
+								this.now.nuevoMensaje("<b>You advanced from level "+this.now.player.attr.nivel+" to level "+nuevoLevel+".</b><br/>");
 								this.now.player.attr.nivel = nuevoLevel;
 							}
 						}
 					}
+
 				}
+
 				clientes.now.delMob(clientes.now.mobs[id].settings.id);
-			} else { 
+			} else {
 				clientes.now.updateMob_(clientes.now.mobs[id]);
 			}
 
 		} else {
 
 			// Ataque a otro personaje
+			
 
 		}
 
@@ -478,18 +656,21 @@ clientes.now.attack = function(id, target){
 }
 
 // Función Update
-var update = setInterval(function(){
+var respawner = setInterval(function(){
 	var online = 0;
 	for(var i in players) {
 		online++;
 	}
 	if(online > 0){
-		/*
-		now.player.hp += hp_;
-		if(now.player.hp > now.player.max_hp)
-			now.player.hp = now.player.max_hp;
-		var n_hp = (now.player.hp*100)/now.player.max_hp; */
-		clientes.now.getStats();
+		var tiempoActual = new Date();
+		for (var i in clientes.now.mobs){
+			if(clientes.now.mobs[i].settings.hp < 1){
+				if(tiempoActual.getTime() > (clientes.now.mobs[i].deathTime + 52000)){
+					clientes.now.mobs[i].settings.hp = clientes.now.mobs[i].settings.maxhp;
+				}
+			}
+
+		}
 	}
 
 },1000);
