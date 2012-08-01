@@ -1,0 +1,96 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files (x86)\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files (x86)\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install' ]
+2 info using npm@1.1.36
+3 info using node@v0.8.2
+4 verbose config file C:\Users\Virtual\.npmrc
+5 verbose config file C:\Program Files (x86)\nodejs\etc\npmrc
+6 verbose config file C:\Program Files (x86)\nodejs\node_modules\npm\npmrc
+7 verbose read json C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\package.json
+8 verbose readDependencies using package.json deps
+9 verbose install where, deps [ 'C:\\users\\Virtual\\Dropbox\\Tikal Online\\Tikal Server',
+9 verbose install   [ 'express', 'now', 'mongoose' ] ]
+10 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\package.json
+11 info preinstall TikalOnlineServer@0.0.1
+12 verbose read json C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\express\package.json
+13 verbose read json C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\libxmljs\package.json
+14 verbose read json C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\mongo\package.json
+15 verbose read json C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\mongodb\package.json
+16 verbose read json C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\mongoose\package.json
+17 verbose read json C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\mongous\package.json
+18 verbose read json C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\mysql\package.json
+19 verbose read json C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\now\package.json
+20 verbose read json C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\socket.io\package.json
+21 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\package.json
+22 verbose readDependencies using package.json deps
+23 verbose read json C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\.bin\package.json
+24 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\express\package.json
+25 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\libxmljs\package.json
+26 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\mongo\package.json
+27 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\mongodb\package.json
+28 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\mongoose\package.json
+29 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\mongous\package.json
+30 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\mysql\package.json
+31 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\now\package.json
+32 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\socket.io\package.json
+33 verbose already installed skipping express@* C:\users\Virtual\Dropbox\Tikal Online\Tikal Server
+34 verbose already installed skipping now@* C:\users\Virtual\Dropbox\Tikal Online\Tikal Server
+35 verbose already installed skipping mongoose@* C:\users\Virtual\Dropbox\Tikal Online\Tikal Server
+36 silly resolved []
+37 info build C:\users\Virtual\Dropbox\Tikal Online\Tikal Server
+38 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\package.json
+39 verbose linkStuff [ false,
+39 verbose linkStuff   false,
+39 verbose linkStuff   false,
+39 verbose linkStuff   'C:\\users\\Virtual\\Dropbox\\Tikal Online' ]
+40 info linkStuff TikalOnlineServer@0.0.1
+41 verbose linkBins TikalOnlineServer@0.0.1
+42 verbose linkMans TikalOnlineServer@0.0.1
+43 verbose rebuildBundles TikalOnlineServer@0.0.1
+44 verbose rebuildBundles [ '.bin',
+44 verbose rebuildBundles   'express',
+44 verbose rebuildBundles   'libxmljs',
+44 verbose rebuildBundles   'mongo',
+44 verbose rebuildBundles   'mongodb',
+44 verbose rebuildBundles   'mongoose',
+44 verbose rebuildBundles   'mongous',
+44 verbose rebuildBundles   'mysql',
+44 verbose rebuildBundles   'now',
+44 verbose rebuildBundles   'socket.io' ]
+45 verbose rebuild bundle C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\libxmljs
+46 info build C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\libxmljs
+47 verbose from cache C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\libxmljs\package.json
+48 info preinstall libxmljs@0.5.4
+49 verbose linkStuff [ false,
+49 verbose linkStuff   false,
+49 verbose linkStuff   false,
+49 verbose linkStuff   'C:\\users\\Virtual\\Dropbox\\Tikal Online\\Tikal Server\\node_modules' ]
+50 info linkStuff libxmljs@0.5.4
+51 verbose linkBins libxmljs@0.5.4
+52 verbose linkMans libxmljs@0.5.4
+53 verbose rebuildBundles libxmljs@0.5.4
+54 info install libxmljs@0.5.4
+55 verbose unsafe-perm in lifecycle true
+56 silly exec cmd "/c" "node-gyp rebuild"
+57 silly cmd,/c,node-gyp rebuild,C:\users\Virtual\Dropbox\Tikal Online\Tikal Server\node_modules\libxmljs spawning
+58 info libxmljs@0.5.4 Failed to exec install script
+59 error libxmljs@0.5.4 install: `node-gyp rebuild`
+59 error `cmd "/c" "node-gyp rebuild"` failed with 1
+60 error Failed at the libxmljs@0.5.4 install script.
+60 error This is most likely a problem with the libxmljs package,
+60 error not with npm itself.
+60 error Tell the author that this fails on your system:
+60 error     node-gyp rebuild
+60 error You can get their info via:
+60 error     npm owner ls libxmljs
+60 error There is likely additional logging output above.
+61 error System Windows_NT 6.1.7600
+62 error command "C:\\Program Files (x86)\\nodejs\\node.exe" "C:\\Program Files (x86)\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install"
+63 error cwd C:\users\Virtual\Dropbox\Tikal Online\Tikal Server
+64 error node -v v0.8.2
+65 error npm -v 1.1.36
+66 error code ELIFECYCLE
+67 error message libxmljs@0.5.4 install: `node-gyp rebuild`
+67 error message `cmd "/c" "node-gyp rebuild"` failed with 1
+68 verbose exit [ 1, true ]

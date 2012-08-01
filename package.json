@@ -1,9 +1,10 @@
 {
-     "name": "Tikal Online Server",
+     "name": "TikalOnlineServer",
      "description": "2D MMORPG by Gilberto Avalos",
      "version": "0.0.1",
      "dependencies": {
-        "express": "3.0.0alpha1",
-        "socket.io": "0.8.4"
+        "express": "*",
+        "now": "*",
+        "mongoose": "*"
      }
 }
